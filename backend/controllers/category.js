@@ -14,11 +14,11 @@ const createCategory = async (req, res) => {
 
     // Enviar email de notificação para o administrador
     const mailOptions = {
-      from: 'paulo.gomes@uncisal.edu.br',
-      to: 'paulohenriquegomessilva1@gmail.com',
+      from: 'nicole.souza@academico.uncisal.edu.br',
+      to: 'nicole.tamarindo21@gmail.com',
       subject: 'Nova categoria criada',
-      text: `Uma nova categoria foi criada na aula do dia 18/11/2024: ${category.name}`,
-      html: `<p>Uma nova categoria foi criada na aula do dia 18/11/2024: ${category.name}</p>`,
+      text: `Uma nova categoria foi criada na aula do dia 22/11/2024: ${category.name}`,
+      html: `<p>Uma nova categoria foi criada na aula do dia 22/11/2024: ${category.name}</p>`,
     };
 
     // Enviar email
