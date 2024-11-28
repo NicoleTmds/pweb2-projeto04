@@ -19,6 +19,6 @@ router.delete('/v1/products/:id', productController.deleteProductById);
 
 // Auth routes
 router.post('/v1/auth/login', authController.login);
-router.post('/v1/auth/cadastro', authController.cadastro);
+router.post('/v1/auth/signup', authController.signup);
 
 module.exports = router;

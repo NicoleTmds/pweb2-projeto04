@@ -93,12 +93,6 @@ const getProductById = async (req, res) => {
  * @returns boolean
  */
 const updateProductById = [
-  // Upload de arquivo em disco
-  upload.single('productImage'),
-
-  // Upload de arquivo em nuvem
-  uploadToCloudinary,
-
   body('name').optional().notEmpty().withMessage('Nome não pode estar vazio'),
   body('price').optional().isNumeric().withMessage('O preço deve ser numérico'),
 
@@ -117,29 +111,18 @@ const updateProductById = [
       }
 
       // Transformação de dados antes de atualizar
-      const updatedData = { ...req.body };
-
-      // Atualizar nome para minúsculo, se enviado
+      const updatedData = req.body;
       if (updatedData.name) {
-        updatedData.name = updatedData.name.toLowerCase();
-      }
-
-      // Atualizar a imagem do produto, se uma nova for enviada
-      if (req.cloudinaryUrl) {
-        updatedData.productImage = req.cloudinaryUrl; // Para upload em nuvem
-      } else if (req.file) {
-        updatedData.productImage = req.file.filename; // Para upload local
+        updatedData.name = updatedData.name.toLowerCase(); // Converter nome para minúsculo
       }
 
       await product.update(updatedData);
-
-      return res.status(200).json(product);
+      return res.status(200).json( product );
     } catch (error) {
       return res.status(500).send(error.message);
     }
-  },
+  }
 ];
-
 
 
 /**

@@ -1,6 +1,8 @@
 const { Category, Product } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 const transporter = require('../config/nodemailer');
+const authMiddleware = require('../middlewares/auth');
+
 
 /**
  * Creates a new category
@@ -10,15 +12,15 @@ const transporter = require('../config/nodemailer');
  */
 const createCategory = async (req, res) => {
   try {
-    const category = await Category.create({ ...req.body, id: uuidv4() });
+    const category = await Category.create({...req.body, id: uuidv4()});
 
     // Enviar email de notificação para o administrador
     const mailOptions = {
-      from: 'nicole.souza@academico.uncisal.edu.br',
-      to: 'nicole.tamarindo21@gmail.com',
+      from: 'paulo.gomes@uncisal.edu.br',
+      to: 'paulohenriquegomessilva1@gmail.com',
       subject: 'Nova categoria criada',
-      text: `Uma nova categoria foi criada na aula do dia 22/11/2024: ${category.name}`,
-      html: `<p>Uma nova categoria foi criada na aula do dia 22/11/2024: ${category.name}</p>`,
+      text: `Uma nova categoria foi criada na aula do dia 18/11/2024: ${category.name}`,
+      html: `<p>Uma nova categoria foi criada na aula do dia 18/11/2024: ${category.name}</p>`,
     };
 
     // Enviar email
@@ -64,7 +66,6 @@ const getCategoryById = async (req, res) => {
       order: [['createdAt', 'DESC']],
     });
 
-
     if (category) {
       return res.status(200).json(category);
     }
@@ -97,28 +98,14 @@ const updateCategory = async (req, res) => {
           },
         ],
       });
-
-      // Configurar email de notificação para o administrador
-      const mailOptions = {
-        from: 'nicole.souza@academico.uncisal.edu.br',
-        to: 'nicole.tamarindo21@gmail.com',
-        subject: 'Categoria atualizada',
-        text: `A categoria "${updatedCategory.name}" foi atualizada com sucesso.`,
-        html: `<p>A categoria "<strong>${updatedCategory.name}</strong>" foi atualizada com sucesso.</p>`,
-      };
-
-      // Enviar email
-      await transporter.sendMail(mailOptions);
-
       return res.status(200).json(updatedCategory);
     }
 
-    throw new Error('Category not found');
+    throw new Error('Category not found ');
   } catch (error) {
     return res.status(500).send(error.message);
   }
 };
-
 
 /**
  * Deletes a single category by it's id
@@ -147,7 +134,7 @@ const deleteCategory = async (req, res) => {
 
 module.exports = {
   createCategory,
-  getAllCategories,
+  getAllCategories: [authMiddleware, getAllCategories],
   getCategoryById,
   updateCategory,
   deleteCategory,
