@@ -1,43 +1,45 @@
 import React, { useState, useEffect } from 'react'
 import { Table, Button, Image } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 export default function ProductList() {
   const [products, setProducts] = useState([])
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:3335/api/v1/products')
-      console.log('API Response:', response.data)
-      
-      if (response.data && Array.isArray(response.data)) {
-        setProducts(response.data)
-      } else {
-        setError('Unexpected data format received from the API')
-      }
+      const response = await axios.get(`http://localhost:3335/api/v1/products`, {
+        withCredentials: true,
+      });
+      setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error)
-      setError('Failed to fetch products. Please try again later.')
+      if (error.response && error.response.status === 401) {
+        navigate('/login', { state: { error: 'Você precisa estar autenticado para acessar esta página.' } });
+      } else {
+        console.error('Error fetching categories:', error);
+      }
     }
   }
 
   const deleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`http://localhost:3335/api/v1/products/${id}`)
-        fetchProducts()
+        await axios.delete(`http://localhost:3335/api/v1/products/${id}`, {
+          withCredentials: true,
+        });
+        fetchProducts();
       } catch (error) {
-        console.error('Error deleting product:', error)
-        setError('Failed to delete product. Please try again later.')
+        console.error('Error deleting category:', error);
       }
     }
-  }
+  };
 
   if (error) {
     return <div className="alert alert-danger">{error}</div>

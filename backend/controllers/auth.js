@@ -1,7 +1,9 @@
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 const { body, validationResult } = require('express-validator');
+const ms = require('ms');
 
 const signup = [
   body('username').notEmpty().withMessage('Username é obrigatório'),
@@ -24,7 +26,7 @@ const signup = [
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await User.create({ username, password: hashedPassword });
+      const user = await User.create({id: uuidv4(), username, password: hashedPassword});
 
       const token = jwt.sign(
         { 
@@ -33,6 +35,15 @@ const signup = [
         process.env.JWT_SECRET, 
         { expiresIn: process.env.JWT_EXPIRES_IN }
       );
+
+      const expiresInMs = ms(process.env.JWT_EXPIRES_IN);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: expiresInMs,
+        sameSite: 'Strict'
+      });
 
       return res.status(201).json({ token });
     } catch (error) {
@@ -74,6 +85,15 @@ const login = [
         { expiresIn: process.env.JWT_EXPIRES_IN } // TTL do token
       );
 
+      const expiresInMs = ms(process.env.JWT_EXPIRES_IN);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: expiresInMs,
+        sameSite: 'Strict'
+      });
+
       return res.status(200).json({ token });
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -82,6 +102,7 @@ const login = [
 ];
 
 const logout = (req, res) => {
+  res.clearCookie('token');
   return res.status(200).json({ message: 'Logout realizado com sucesso' });
 };
 

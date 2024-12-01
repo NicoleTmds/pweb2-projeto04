@@ -10,35 +10,41 @@ export default function CategoryForm() {
 
   useEffect(() => {
     if (id) {
-      fetchCategory()
+      fetchCategory();
     }
-  }, [id])
+  }, [id]);
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get(`http://localhost:3335/api/v1/categories/${id}`)
-      setCategory(response.data)
+      const response = await axios.get(`http://localhost:3335/api/v1/categories/${id}`, {
+        withCredentials: true,
+      });
+      setCategory(response.data);
     } catch (error) {
-      console.error('Error fetching category:', error)
+      console.error('Error fetching category:', error);
     }
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (id) {
-        await axios.put(`http://localhost:3335/api/v1/categories/${id}`, category)
+        await axios.put(`http://localhost:3335/api/v1/categories/${id}`, category, {
+          withCredentials: true,
+        });
       } else {
-        await axios.post('http://localhost:3335/api/v1/categories', category)
+        await axios.post('http://localhost:3335/api/v1/categories', category, {
+          withCredentials: true,
+        });
       }
-      navigate('/categories')
+      navigate('/categories');
     } catch (error) {
-      console.error('Error saving category:', error)
+      console.error('Error saving category:', error);
     }
-  }
+  };
 
   const handleChange = (e) => {
-    setCategory({ ...category, [e.target.name]: e.target.value })
+    setCategory({ ...category, [e.target.name]: e.target.value });
   }
 
   return (

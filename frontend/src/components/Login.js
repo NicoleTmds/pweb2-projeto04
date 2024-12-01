@@ -25,11 +25,15 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3335/api/v1/auth/login', credentials);
-      localStorage.setItem('token', response.data.token);
+      const response = await axios.post('http://localhost:3335/api/v1/auth/login', credentials, {
+        withCredentials: true, 
+      });
+      // O token será armazenado no cookie pelo backend, 
+      console.log(response.data);
+
       navigate('/categories');
     } catch (error) {
-      setError('Login failed. Please check your credentials.');
+      setError('Login failed. Please check your credentials...');
     }
   };
 

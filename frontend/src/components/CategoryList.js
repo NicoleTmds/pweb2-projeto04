@@ -9,38 +9,36 @@ export default function CategoryList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login', { state: { error: 'Você precisa estar autenticado para acessar esta página.' } });
-    } else {
-      fetchCategories();
-    }
+    fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3335/api/v1/categories', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      setCategories(response.data)
+      const response = await axios.get(`http://localhost:3335/api/v1/categories`, {
+        withCredentials: true,
+      });
+      setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      if (error.response && error.response.status === 401) {
+        navigate('/login', { state: { error: 'Você precisa estar autenticado para acessar esta página.' } });
+      } else {
+        console.error('Error fetching categories:', error);
+      }
     }
   }
 
   const deleteCategory = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        await axios.delete(`http://localhost:3335/api/v1/categories/${id}`)
-        fetchCategories()
+        await axios.delete(`http://localhost:3335/api/v1/categories/${id}`, {
+          withCredentials: true, // Envia o cookie com a requisição
+        });
+        fetchCategories();
       } catch (error) {
-        console.error('Error deleting category:', error)
+        console.error('Error deleting category:', error);
       }
     }
-  }
+  };
 
   return (
     <div>
